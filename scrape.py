@@ -1,12 +1,30 @@
 import pandas as pd
+import sys
+import logging
 import bs4 
 import requests as req
 
 WEBSITE_URL = "https://www.mass.gov/info-details/massachusetts-city-and-town-ordinances-and-by-laws"
 
-req = req.get(WEBSITE_URL)
-req.status_code
-soup = bs4.BeautifulSoup(req.text, 'html.parser')
+
+logger = logging.getLogger(__name__)
+
+def test_connection(url):
+    """
+    input: url for scraping
+    output: html text if website status is good, else, error
+    """
+
+    req = req.get(url)
+    req.status_code
+    if req.status_code != 200:
+        logger.error('Website status code!=200. Exit program.')
+        sys.exit()
+    soup = bs4.BeautifulSoup(req.text, 'html.parser')
+    logger.info ("html parsed")
+    return soup
+
+
 
 # get first table from page
 table = soup.find_all('table')[0]
