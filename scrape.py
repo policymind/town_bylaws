@@ -25,22 +25,37 @@ for i in range(0,len(header)) :
 
 titles
 
+tables = soup.find_all('table')
+
+
 def handle_nulls(x):
-    if x is not None:
-        return x.text.strip()
+    """extracts the href from a cell while maintaining the blanks if an href is not there"""
+    if x.text.strip() != '':
+        return x.find("a").get('href')
     return ""
 
-town_data =[]
-for row in rows[2:]:
-    content = []
-    cells = row.find_all('td')
-    for iter in range(0,3,1) :
-        content.append(handle_nulls(cells[iter]))
-    town_data.append(content)
+
+def process_table(table_sample):
+    """
+    input: the table from beautiful soup
+    output: data in list form
+    """
+    rows = table.find_all('tr')
+    town_data =[]
+    for row in rows[1:]:
+        content = []
+        city = row.find('th').text.strip()
+        print(city)
+        content.append(city)
+        cells = row.find_all('td')
+        len(cells)
+        for iter in range(len(cells)) :
+            content.append(handle_nulls(cells[iter]))
+        town_data.append(content)
+    return town_data
     
 
-        city = cells.text.strip()
-    bylaws = cells[1].text.strip()
-    zoning = cells[2].text.strip()
-    other = cells[3].text.strip()
-    print(city, bylaws, zoning, other)
+
+
+
+
