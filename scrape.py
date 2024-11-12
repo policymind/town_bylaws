@@ -1,13 +1,18 @@
-import pandas as pd
 import sys
 import logging
 import bs4 
 import requests
+import json
+import datetime
 
 WEBSITE_URL = "https://www.mass.gov/info-details/massachusetts-city-and-town-ordinances-and-by-laws"
 
-
 logger = logging.getLogger(__name__)
+
+ct = datetime.datetime.now()
+cdate=ct.date()
+
+
 
 def test_connection(url):
     """
@@ -34,7 +39,6 @@ def get_table_names(soup):
     logger.info("%s tables found", str(num_tables))
     return table_names
 
-
 def get_column_headers(soup):
     """ get column headers for first table"""
     table = soup.find_all('table')[0]
@@ -45,14 +49,11 @@ def get_column_headers(soup):
         col_headers.append(header[i].text.strip())
     return col_headers
 
-
-
 def handle_nulls(x):
     """extracts the href from a cell while maintaining the blanks if an href is not there"""
     if x.text.strip() != '':
         return x.find("a").get('href')
     return ""
-
 
 def process_table(table_sample):
     """
@@ -72,13 +73,29 @@ def process_table(table_sample):
             content.append(handle_nulls(cells[iter]))
         town_data.append(content)
     return town_data
-    
+
+def convert_to_dict(table_sample, col_headers):
+    city_data = {row_val[0] : {x:y for x,y in zip(col_headers[1:], row_val[1:])} for row_val in table_sample}   
+    return city_data
+
+def data_cleaning(table, col_headers):
+    scraped_data = process_table(table)
+    town_dict = convert_to_dict(scraped_data, col_headers)
+    return town_dict
+
 ######### SCRIPT
 
-
 soup = test_connection(WEBSITE_URL)
+table_names = get_table_names(soup)
+col_headers = get_column_headers(soup)
 
-# get first table from page
-table = soup.find_all('table')[0]
-rows = table.find_all('tr')
+table_list = soup.find_all('table')
+
+table_data = {}
+if len(table_list) == len(table_names):
+    table_data = {section:data_cleaning(table) for section,table in zip(table_names,table_list)}
+
+# Convert and write JSON object to file
+with open(f"MA_BYLAWS_{cdate}.json", "w") as outfile:
+    json.dump(table_data, outfile)
 
