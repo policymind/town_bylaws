@@ -1,8 +1,8 @@
-#!/home/ubuntu/analysis/town_bylaws/matown_pyenv/bin/python3
+#!/c/Users/aapee/OneDrive/personal-projects/town_bylaws/matown_env/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
-from charset_normalizer.cli import cli_detect
+from pylint import run_pylint
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-    sys.exit(cli_detect())
+    sys.exit(run_pylint())
