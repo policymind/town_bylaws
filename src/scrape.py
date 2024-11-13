@@ -6,6 +6,12 @@ import datetime
 
 import bs4
 import requests
+import keyring
+
+keyring.get_keyring()
+keyring.get_password("aws_secrets", "matown_s3_secret"))
+set
+
 
 WEBSITE_URL = "https://www.mass.gov/info-details/massachusetts-city-and-town-ordinances-and-by-laws"
 
@@ -46,8 +52,8 @@ def get_column_headers(results):
     rows = table.find_all('tr')
     header = rows[0].find_all('th')
     col_vars = []
-    for i in enumerate(header) :
-        col_vars.append(header[i].text.strip())
+    for index, value in enumerate(header) :
+        col_vars.append(value.text.strip())
     return col_vars
 
 def handle_nulls(x):
@@ -69,15 +75,15 @@ def process_table(table_sample):
         print(city)
         content.append(city)
         cells = row.find_all('td')
-        len(cells)
-        for i in enumerate(cells):
-            content.append(handle_nulls(i))
+
+        for index, value in enumerate(cells):
+            content.append(handle_nulls(cells[index]))
         town_data.append(content)
     return town_data
 
 def convert_to_dict(table_sample, cols_vars):
     """restructure output into dictionry for nesting"""
-    city_data = {row_val[0] : {x:y for x,y in zip(cols_vars[1:], row_val[1:])} for row_val in table_sample}
+    city_data = {row_val[0]:{x:y for x,y in zip(cols_vars[1:], row_val[1:])} for row_val in table_sample}
     return city_data
 
 def data_cleaning(table, cols_vars):
@@ -91,12 +97,12 @@ def data_cleaning(table, cols_vars):
 soup = test_connection(WEBSITE_URL)
 table_names = get_table_names(soup)
 col_headers = get_column_headers(soup)
-
 table_list = soup.find_all('table')
 
 table_data = {}
 if len(table_list) == len(table_names):
     table_data = {section:data_cleaning(table, col_headers) for section,table in zip(table_names,table_list)}
+
 
 # Convert and write JSON object to file
 with open(f"MA_BYLAWS_{cdate}.json", "w") as outfile:
