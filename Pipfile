@@ -8,6 +8,7 @@ bs4 = "*"
 requests = "*"
 keyring = "*"
 boto3 = "*"
+pylint = "*"
 
 [dev-packages]
 
