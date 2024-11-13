@@ -9,6 +9,8 @@ requests = "*"
 keyring = "*"
 boto3 = "*"
 pylint = "*"
+pyarrow = "*"
+pandas = "*"
 
 [dev-packages]
 
