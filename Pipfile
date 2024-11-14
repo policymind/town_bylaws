@@ -11,6 +11,8 @@ boto3 = "*"
 pylint = "*"
 pyarrow = "*"
 pandas = "*"
+setuptools = "*"
+scrape = {file = "."}
 
 [dev-packages]
 

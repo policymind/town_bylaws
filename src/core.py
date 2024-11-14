@@ -1,7 +1,7 @@
 import json
 import datetime
 import boto3
-import scrape as sc
+import src.scrape as sc
 
 
 WEBSITE_URL = "https://www.mass.gov/info-details/massachusetts-city-and-town-ordinances-and-by-laws"
