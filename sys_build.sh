@@ -25,3 +25,4 @@ pyenv install 3.12.3
 pyenv global 3.12.3
 
 
+sudo apt install gnome-keyring
