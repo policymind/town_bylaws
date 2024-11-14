@@ -1,26 +1,18 @@
 """ functions for scraping the MA GOV town bylaws"""
 import sys
 import logging
-import json
 import datetime
-
 import bs4
 import requests
-import keyring
-
-keyring.get_keyring()
-keyring.get_password("aws_secrets", "matown_s3_secret"))
-set
 
 
 WEBSITE_URL = "https://www.mass.gov/info-details/massachusetts-city-and-town-ordinances-and-by-laws"
+COL_HEADERS = ['city','bylaws_reg', "zoning","other"]
 
 logger = logging.getLogger(__name__)
 
 ct = datetime.datetime.now()
 cdate=ct.date()
-
-
 
 def test_connection(url):
     """
@@ -83,7 +75,7 @@ def process_table(table_sample):
 
 def convert_to_dict(table_sample, cols_vars):
     """restructure output into dictionry for nesting"""
-    city_data = {row_val[0]:{x:y for x,y in zip(cols_vars[1:], row_val[1:])} for row_val in table_sample}
+    city_data = [{x:y for x,y in zip(cols_vars, row_val)} for row_val in table_sample]
     return city_data
 
 def data_cleaning(table, cols_vars):
@@ -91,19 +83,3 @@ def data_cleaning(table, cols_vars):
     scraped_data = process_table(table)
     town_dict = convert_to_dict(scraped_data, cols_vars)
     return town_dict
-
-######### SCRIPT
-
-soup = test_connection(WEBSITE_URL)
-table_names = get_table_names(soup)
-col_headers = get_column_headers(soup)
-table_list = soup.find_all('table')
-
-table_data = {}
-if len(table_list) == len(table_names):
-    table_data = {section:data_cleaning(table, col_headers) for section,table in zip(table_names,table_list)}
-
-
-# Convert and write JSON object to file
-with open(f"MA_BYLAWS_{cdate}.json", "w") as outfile:
-    json.dump(table_data, outfile)
