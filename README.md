@@ -6,6 +6,12 @@ Stack:
  - bash
 
 
+### Current findings:
+ - 130 out of 349 municipalities/towns in MA use ecode360 to host their bylaws
+ - ecode360 looks _very_ scrapeable
+ - scrape ecode360 links and save to file in s3 bucket
+ 
+  
 ### Goals:
  - Scrape:
    - [x] Write a script to scrape ma.gov's website to grab all 351 towns and links to their bylaws
@@ -18,11 +24,3 @@ Stack:
    - [x] set up bucket
    - [x] save credentials to an `.aws` file
    - [x] save downloads to bucket
-
-
-### Current findings:
- - 130 out of 349 municipalities/towns in MA use ecode360 to host their bylaws
- - ecode360 looks _very_ scrapeable
- - 
- 
-  
