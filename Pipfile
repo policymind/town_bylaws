@@ -15,6 +15,7 @@ setuptools = "*"
 scrape = {file = "."}
 pymongo = "*"
 progressbar2 = "*"
+supabase = "*"
 
 [dev-packages]
 
