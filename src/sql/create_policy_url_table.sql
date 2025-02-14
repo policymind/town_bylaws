@@ -1,11 +1,11 @@
 create table public.town_policy_urls (
   url_id uuid default uuid_generate_v4 () primary key,
-  town_id uuid not null references towns (town_id),
+  town_id text not null references towns (town_id) INITIALLY DEFERRED,
   source_url TEXT not null,
   policy_type TEXT not null,
   url_type TEXT not null generated always  as (
     case
-      when source_url like '%.ecode360%' then 'ecode'
+      when source_url like '%ecode360%' then 'ecode'
       when source_url like '%municode%' then 'municode'
       when source_url like '%.pdf' then 'pdf'
       else 'crawl'
