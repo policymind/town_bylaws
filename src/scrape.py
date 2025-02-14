@@ -51,7 +51,12 @@ def get_column_headers(results):
 def handle_nulls(x):
     """extracts the href from a cell while maintaining the blanks if an href is not there"""
     if x.text.strip() != '':
-        return x.find("a").get('href')
+        contents = x.find_all('a', href=True)
+        if len(contents) > 1:
+            url_link = ";".join([item['href'] for item in contents])
+        else:
+            url_link = contents[0]['href']
+        return url_link
     return ""
 
 def process_table(table_sample):
