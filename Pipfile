@@ -16,6 +16,9 @@ scrape = {file = "."}
 pymongo = "*"
 progressbar2 = "*"
 supabase = "*"
+sqlalchemy = "*"
+python-dotenv = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
