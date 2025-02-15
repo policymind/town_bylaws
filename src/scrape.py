@@ -5,8 +5,6 @@ import datetime
 import bs4
 import requests
 
-
-WEBSITE_URL = "https://www.mass.gov/info-details/massachusetts-city-and-town-ordinances-and-by-laws"
 COL_HEADERS = ['city','bylaws_reg', "zoning","other"]
 
 logger = logging.getLogger(__name__)
