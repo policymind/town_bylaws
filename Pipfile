@@ -19,6 +19,9 @@ supabase = "*"
 sqlalchemy = "*"
 python-dotenv = "*"
 psycopg2-binary = "*"
+docling = "*"
+pymupdf = "*"
+pymupdf4llm = "*"
 
 [dev-packages]
 

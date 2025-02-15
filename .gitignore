@@ -10,6 +10,9 @@ __pycache__/
 # C extensions
 *.so
 
+# grobid
+grobid-0.8.0
+
 # Distribution / packaging
 .Python
 build/
