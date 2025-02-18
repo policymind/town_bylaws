@@ -11,6 +11,10 @@ create table public.town_policy_urls (
       else 'crawl'
     end) stored,
   created_at timestamp
+  date_downloaded timestamp,
+  date_raw_upload timestamp,
+  date_markdowned timestamp,
+  date_mongo_insert timestamp
 );
 
 comment on table public.town_policy_urls is 'table of town policy urls scraped from state website';
@@ -26,3 +30,11 @@ comment on column public.town_policy_urls.policy_type is 'policy type: bylaws, z
 comment on column public.town_policy_urls.url_type is 'type of link: ecode360, municode, pdf, or further town website. generated.';
 
 comment on column public.town_policy_urls.created_at is 'timestamp of record entry';
+
+comment on column public.town_policy_urls.date_downloaded is 'timestamp of file download from source';
+
+comment on column public.town_policy_urls.date_raw_upload is 'timestamp of file uploaded to s3 in raw format';
+
+comment on column public.town_policy_urls.date_markdowned is 'timestamp of file uploaded to markdown directory reformatted';
+
+comment on column public.town_policy_urls.date_mongo_insert is 'timestamp of md content uploaded into mongodb';
