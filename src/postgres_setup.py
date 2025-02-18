@@ -57,7 +57,7 @@ filtered_df.to_sql("town_links",engine, schema='raw', if_exists='replace')
 # --------------------------------
 def update_doc_id_table(url_id, process):
     """ update url policy table with date of process completion """
-    
+
     update_stmt = f"UPDATE public.town_policy_ruls SET {PROCESS_COLUMN[process]} = NOW()::TIMESTAMP  WHERE url_id = {url_id}"
 
     update_table_qry = text(update_stmt)
@@ -65,4 +65,7 @@ def update_doc_id_table(url_id, process):
         connection.execute(update_table_qry)
         connection.commit()
 
-
+def fetch_rows(record_type):
+    select_stmt = f"select doc_id from public.town_policy_ruls WHERE url_type = {record_type}"
+    uuid_df = pd.read_sql(select_stmt, engine)
+    return uuid_df['doc_id'].tolist()
