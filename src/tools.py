@@ -1,4 +1,4 @@
-
+"""currently named tools file, but could be renamed as connections"""
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -17,14 +17,16 @@ mongo_uri = os.getenv("mdb_connection")
 
 
 def get_postgres_engine():
+    """rather than repeat the load dotenv a million time, create a function for it"""
     # Construct the SQLAlchemy connection string
-    DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
+    database_url = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
     # Create the SQLAlchemy engine
-    engine = create_engine(DATABASE_URL)
+    engine = create_engine(database_url)
     return engine
 
 
 def get_mongo_client():
+    """singular function for connection to mongo"""
     # Create a new client and connect to the server
     client = MongoClient(mongo_uri = os.getenv("mdb_connection")
     , server_api=ServerApi('1'))

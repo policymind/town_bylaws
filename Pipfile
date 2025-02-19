@@ -28,6 +28,7 @@ pdf2image = "*"
 pillow = "*"
 selenium = "*"
 webdriver-manager = "*"
+markdownify = "*"
 
 [dev-packages]
 
