@@ -19,9 +19,15 @@ supabase = "*"
 sqlalchemy = "*"
 python-dotenv = "*"
 psycopg2-binary = "*"
-docling = "*"
 pymupdf = "*"
 pymupdf4llm = "*"
+ocrmypdf = "*"
+pytesseract = "*"
+pypdf2 = "*"
+pdf2image = "*"
+pillow = "*"
+selenium = "*"
+webdriver-manager = "*"
 
 [dev-packages]
 

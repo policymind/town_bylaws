@@ -9,7 +9,7 @@ from pymongo import UpdateOne
 from bson.objectid import ObjectId
 import keyring
 
-import src.scrape as sc
+import src.initial_setup.scrape_ma as sc
 import src.mongo as mg
 
 
@@ -87,7 +87,7 @@ import urllib.request
 url_sample = "https://www.townofchesterfieldma.com/sites/g/files/vyhlif7606/f/uploads/general_town_by-laws_2022.pdf"
 mg.confirm_pdf(url_sample)
 
-download_path = f"downloads/policy_file.pdf"
+download_path = f"sample_pdfs/policy_file.pdf"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}
@@ -135,8 +135,121 @@ with open(file_name, "w") as outfile:
 
 
 import pymupdf4llm
-download_path = f"downloads/policy_file.pdf"
+download_path = f"sample_pdfs/belmontpage3.pdf"
 doc = pymupdf4llm.to_markdown(download_path)
 from pathlib import Path
-Path("output.md").write_bytes(doc.encode())
+Path("belmontpage3.md").write_bytes(doc.encode())
 print(doc)
+
+import pymupdf 
+with pymupdf.open(download_path) as doc:  # open document
+    text = chr(12).join([page.get_text() for page in doc])
+# write as a binary file to support non-ASCII characters
+Path(download_path + ".txt").write_bytes(text.encode())
+
+
+
+from PyPDF2 import PdfReader, PdfWriter
+
+def convert_to_regular_pdf(input_path, output_path):
+    """
+    Converts an Adobe PDF to a regular PDF by flattening it.
+
+    Args:
+        input_path (str): Path to the input Adobe PDF file.
+        output_path (str): Path to save the converted regular PDF file.
+    """
+    try:
+        with open(input_path, 'rb') as input_file:
+            reader = PdfReader(input_file)
+            writer = PdfWriter()
+
+            for page in reader.pages:
+                writer.add_page(page)
+            
+            with open(output_path, 'wb') as output_file:
+                writer.write(output_file)
+        print(f"Successfully converted '{input_path}' to '{output_path}'")
+    
+    except FileNotFoundError:
+         print(f"Error: Input file '{input_path}' not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    input_pdf_path = 'sample_pdfs/Town of Belmont, MA.pdf'  # Replace with your input PDF path
+    output_pdf_path = 'sample_pdfs/reformated_belmont.pdf'  # Replace with your desired output path
+    convert_to_regular_pdf(input_pdf_path, output_pdf_path)
+
+import pytesseract
+from pdf2image import convert_from_path
+
+# convert to image using resolution 600 dpi 
+pages = convert_from_path("sample_pdfs/chestfieldpage3.pdf", 600)
+
+# extract text
+text_data = ''
+for page in pages:
+    text = pytesseract.image_to_string(page)
+    text_data += text + '\n'
+print(text_data)
+
+
+# ---------------------------------------------------------------------------------
+
+import os
+import base64
+import pytesseract
+from pdf2image import convert_from_path
+from bs4 import BeautifulSoup
+
+# Function to convert PDF to images
+def pdf_to_images(pdf_path):
+    return convert_from_path(pdf_path, fmt='tiff')
+
+# Function to convert image to hOCR using pytesseract
+def image_to_hocr(image):
+    return pytesseract.image_to_pdf_or_hocr(image, extension='hocr')
+
+# Function to convert hOCR to markdown
+def hocr_to_markdown(hocr):
+    soup = BeautifulSoup(hocr, 'html.parser')
+    markdown_text = ""
+
+    for line in soup.find_all('span', class_='ocr_line'):
+        line_text = " ".join([word.get_text() for word in line.find_all('span', class_='ocrx_word')])
+        markdown_text += f"{line_text}\n"
+
+    return markdown_text
+
+# Main function to convert PDF to Markdown
+def pdf_to_markdown(pdf_path):
+    images = pdf_to_images(pdf_path)
+    markdown_text = ""
+
+    for image in images:
+        hocr = image_to_hocr(image)
+        markdown_text += hocr_to_markdown(hocr) + "\n\n"
+
+    return markdown_text
+
+# Example usage
+if __name__ == "__main__":
+    pdf_path = "sample_pdfs/policy_file.pdf"  # Path to your PDF file
+    markdown_output = pdf_to_markdown(pdf_path)
+    with open("output.md", "w") as file:
+        file.write(markdown_output)
+
+
+
+###### --------------------------------------
+
+class policy_processor():
+    def __init__(self, url_type):
+        self.url_type = url_type
+        pass
+
+
+with open(file_path, 'r') as file:
+    file_content = file.read()
+    data = json.loads(file_content)
