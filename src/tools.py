@@ -14,8 +14,11 @@ HOST = os.getenv("host")
 PORT = os.getenv("port")
 DBNAME = os.getenv("dbname")
 mongo_uri = os.getenv("mdb_connection")
+mdb_user = os.getenv("mdb_user")
+mdb_password = os.getenv("mdb_password")
+mongo_db_url = rf"mongodb+srv://aapeebles:{mdb_password}@policycluster.nwfe5.mongodb.net/?retryWrites=true&w=majority&appName=policyCluster"
 
-
+mdb_connection
 def get_postgres_engine():
     """rather than repeat the load dotenv a million time, create a function for it"""
     # Construct the SQLAlchemy connection string
@@ -28,8 +31,7 @@ def get_postgres_engine():
 def get_mongo_client():
     """singular function for connection to mongo"""
     # Create a new client and connect to the server
-    client = MongoClient(mongo_uri = os.getenv("mdb_connection")
-    , server_api=ServerApi('1'))
+    client = MongoClient(mongo_uri, server_api=ServerApi('1'))
     # Send a ping to confirm a successful connection
     try:
         client.admin.command('ping')
@@ -37,3 +39,8 @@ def get_mongo_client():
         return client
     except Exception as e:
         print(e)
+
+test = get_mongo_client()
+
+mongo_uri
+MongoClient()

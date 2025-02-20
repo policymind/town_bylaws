@@ -1,43 +1,38 @@
-import requests
-import urllib.request
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from pymongo import UpdateOne
+from bson.objectid import ObjectId
+import src.tools as tl
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}
+mongo_client = tl.get_mongo_client()
 
-def confirm_pdf(link):
-    if link != "" :
-        if link.rsplit(".",1)[1] == "pdf":
-            return 1
-        elif 'Content-Type' in dict(requests.head(link,headers=HEADERS).headers).keys():
-            if  dict(requests.head(link,headers=HEADERS).headers)['Content-Type'] == 'application/pdf':
-                return 1
-    return 0
+# Create a new client and connect to the server
+client = MongoClient(keyring.get_password('mongodb', 'cluster0'), server_api=ServerApi('1'))
 
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
 
-def fetch_pdf_links(dict_row, dict_results):
-    city = dict_row.get('city')
-    bylaw_link = dict_row.get('bylaws_reg')
-    print(bylaw_link)
-    file_name = bylaw_link.rsplit('/',1)[1]
-    download_path = f"downloads/{city}_{file_name}"
+# set db as mydatabase
+mydb = client["mydatabase"]
+# create new table matownpilicy
+towntab = mydb['matownpolicy']
 
-    url = bylaw_link
-    req = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(req) as response, open(download_path, "wb") as f:
-        f.write(response.read())
-    dict_results.update({city,download_path})
+# create ecode var
+towntab.update_many("bylaws_reg":{"$regex":"ecode360"}, { "$set": { "ecode" : "True" } })
 
-def download_pdfs(mongo_db_query_results):
-    town_downloads = {}
-    for x in mongo_db_query_results:
-        fetch_pdf_links(x,town_downloads)
-    return town_downloads
+# find towns with clear pdf in url
+pdf_query = {"ecode": {"$ne" :"True"}}
+mydoc2 = towntab.find(pdf_query).to_list()
 
-def confirm_pdf(link):
-    if link != "" :
-        if link.rsplit(".",1)[1] == "pdf":
-            return 1
-        elif 'Content-Type' in dict(requests.head(link,headers=HEADERS).headers).keys():
-            if  dict(requests.head(link,headers=HEADERS).headers)['Content-Type'] == 'application/pdf':
-                return 1
-    return 0
+confirmed_websites = [{'id':str(row.get('_id')), 'has_pdf': mg.confirm_pdf(row.get('bylaws_reg'))} for row in progressbar(mydoc2)]
+filtered_data = [d['id'] for d in confirmed_websites if d['has_pdf'] != 0]
+
+# update mongo table
+updates = []
+for id  in filtered_data:
+    updates.append(UpdateOne({'_id': ObjectId(id)}, {'$set': {'ispdf': 1}}))
+towntab.bulk_write(updates)
