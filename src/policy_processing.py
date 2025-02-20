@@ -6,12 +6,9 @@ import urllib.request
 from pathlib import Path
 import requests
 import boto3
-from bs4 import BeautifulSoup
+from selenium import webdriver
 import pymupdf4llm
-
 from markdownify import markdownify
-import postgres_functions as pf
-
 
 # Create an S3 client
 
@@ -27,7 +24,10 @@ HEADERS = {"User-Agent":
 
 
 s3 = boto3.client('s3')
-my_bucket = s3.Bucket(BUCKET_NAME)
+
+
+s3_2 = boto3.resource('s3')
+my_bucket = s3_2.Bucket(BUCKET_NAME)
 
 ### Upload to s3 
 
@@ -54,10 +54,10 @@ def get_s3_files(sub_dir):
         oid_list.append(objects.key)
     return oid_list
 
-def get_file(uuid_file):
+def get_file(file_name, sub_dir):
     """ downloads specific file to local"""
-    with open('FILE_NAME', 'wb') as f:
-        s3.download_fileobj(BUCKET_NAME, uuid_file, f)
+    with open(file_name, 'wb') as f:
+        s3.download_fileobj(BUCKET_NAME, f"{sub_dir}/{file_name}", f)
 
 # confirm link is to pdf
 def confirm_pdf(link):
@@ -79,27 +79,47 @@ def fetch_pdf_file(policy_id, policy_url):
         f.write(response.read())
 
 # ecode files
+
+
+# set up ChromeOptions
+options = webdriver.ChromeOptions()
+# add headless Chrome option
+options.add_argument("--headless=new")
+# set up Chrome in headless mode
+driver = webdriver.Chrome(options=options)
+
+
 def fetch_ecode_file(policy_id, policy_url):
     """get policy from ecode360 link """
     # Extract last part of url string
     parsed_url = urlparse(policy_url)
+    print(parsed_url.path)
     html_ecode_link = f"https://ecode360.com/output/word_html{parsed_url.path}"
+    print(html_ecode_link)
+    driver.get(html_ecode_link)
 
-    req = requests.get(html_ecode_link, timeout=10)
-    if req.status_code != 200:
-        sys.exit()
-    results = BeautifulSoup(req.text, 'html.parser')
 
+    # req = requests.get(html_ecode_link,headers=HEADERS, timeout=10)
+    # print(req.status_code)
+    # if req.status_code != 200:
+    #     sys.exit()
+    # results = BeautifulSoup(req.text, 'html.parser')
     html_filename =  f"{policy_id}.html"
-    with html_filename.open("w") as fp:
-        fp.write(results)
+
+    with open(html_filename, "w", encoding="utf-8") as file:
+        file.write(driver.page_source)
+
+    print(f"HTML file saved to {html_filename}")
+    # release the resources allocated by Selenium and shut down the browser
+    driver.quit()
+
 
 
 ## convert to markdown functions
 def convert_html_markdown(url_id):
     """ convert html file to markdown doc"""
     file_path = f"{url_id}.html"
-    with file_path.open('r') as fp:
+    with open(file_path,'r') as fp:
         results = fp.read()
     doc = markdownify(results, heading_style="ATX")
     Path(f"{url_id}.md").write_bytes(doc.encode())

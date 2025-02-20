@@ -13,7 +13,6 @@ pyarrow = "*"
 pandas = "*"
 setuptools = "*"
 scrape = {file = "."}
-pymongo = "*"
 progressbar2 = "*"
 supabase = "*"
 sqlalchemy = "*"
