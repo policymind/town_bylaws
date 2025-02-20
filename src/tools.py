@@ -16,9 +16,9 @@ DBNAME = os.getenv("dbname")
 mongo_uri = os.getenv("mdb_connection")
 mdb_user = os.getenv("mdb_user")
 mdb_password = os.getenv("mdb_password")
-mongo_db_url = rf"mongodb+srv://aapeebles:{mdb_password}@policycluster.nwfe5.mongodb.net/?retryWrites=true&w=majority&appName=policyCluster"
+mongo_db_url = f"mongodb+srv://aapeebles:{mdb_password}@policycluster.nwfe5.mongodb.net/?retryWrites=true&w=majority&appName=policyCluster"
 
-mdb_connection
+
 def get_postgres_engine():
     """rather than repeat the load dotenv a million time, create a function for it"""
     # Construct the SQLAlchemy connection string

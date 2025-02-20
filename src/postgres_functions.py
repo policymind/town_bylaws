@@ -26,3 +26,10 @@ def fetch_rows(record_type):
     uuid_df = pd.read_sql(select_stmt, engine)
 
     return uuid_df
+
+def fetch_for_mongo_load():
+    """ function to update policy id with date of action """
+    select_stmt = "select url_id::text from public.town_policy_urls WHERE date_markdowned is not null and date_mongo_insert is null"
+    uuid_df = pd.read_sql(select_stmt, engine)
+    uuid_list = uuid_df['url_id'].to_list()
+    return uuid_list

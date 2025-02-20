@@ -28,6 +28,7 @@ pillow = "*"
 selenium = "*"
 webdriver-manager = "*"
 markdownify = "*"
+pymongo = "*"
 
 [dev-packages]
 

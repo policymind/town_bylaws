@@ -62,3 +62,16 @@ file_path = "municode_sample.html"
 with open(file_path, "w", encoding="utf-8") as file:
     file.write(driver.page_source)
 driver.quit()
+
+
+from selenium import webdriver
+driver = webdriver.Chrome (executable_path="C:\chromedriver.exe")
+driver.maximize_window()
+driver.get("https://www.google.com/")
+# identify elements with tagname <a>
+lnks=driver.find_elements_by_tag_name("a")
+# traverse list
+for lnk in lnks:
+   # get_attribute() to get all href
+   print(lnk.get_attribute(href))
+driver.quit()
