@@ -29,6 +29,7 @@ selenium = "*"
 webdriver-manager = "*"
 markdownify = "*"
 pymongo = "*"
+lxml-html-clean = "*"
 
 [dev-packages]
 
